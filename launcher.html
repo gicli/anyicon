@@ -11,7 +11,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* 배경 그라데이션 및 애니메이션 효과 */
     body {
       background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
@@ -25,111 +24,113 @@
     }
   </style>
 </head>
-<body class="min-h-screen text-slate-100 flex flex-col justify-between items-center p-6 select-none">
+<body class="min-h-screen text-slate-100 flex flex-col justify-between items-center p-5 select-none">
+  <!-- 숨겨진 512x512 렌더링 캔버스 -->
+  <canvas id="render-canvas" width="512" height="512" class="hidden"></canvas>
+
   <!-- 상단 네비게이션 -->
   <header class="w-full max-w-md flex justify-between items-center pt-2">
     <div class="flex items-center gap-2">
       <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
       <span class="text-xs font-semibold tracking-wider text-indigo-300 uppercase">AnyIcon Launcher</span>
     </div>
-    <a href="./index.html" class="text-xs bg-slate-800/80 hover:bg-slate-750 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700/60 transition">
-      아이콘 스튜디오로 돌아가기
+    <a href="./index.html" class="text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-3.5 py-1.5 rounded-full border border-slate-700/60 transition flex items-center gap-1.5">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+      <span>새 아이콘 만들기</span>
     </a>
   </header>
 
   <!-- 중앙 메인 안내 카드 -->
-  <main class="w-full max-w-md flex flex-col items-center text-center my-auto py-6">
+  <main class="w-full max-w-md flex flex-col items-center text-center my-auto py-4">
     <!-- 커스텀 아이콘 렌더링 영역 -->
-    <div class="relative mb-6">
-      <div id="icon-container" class="w-32 h-32 rounded-3xl overflow-hidden icon-glow border-2 border-indigo-400/40 bg-slate-900 shadow-2xl flex items-center justify-center">
+    <div class="relative mb-5">
+      <div id="icon-container" class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden icon-glow border-2 border-indigo-400/40 bg-slate-900 shadow-2xl flex items-center justify-center">
         <img id="launcher-icon-img" src="./favicon.svg" alt="커스텀 아이콘" class="w-full h-full object-cover" />
       </div>
-      <div id="badge-display" class="hidden absolute -top-2 -right-2 bg-rose-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg border border-white/20">
+      <div id="badge-display" class="hidden absolute -top-2 -right-2 bg-rose-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-lg border border-white/20">
         1
       </div>
     </div>
 
     <!-- 타이틀 및 연결 링크 안내 -->
-    <h1 id="launcher-title" class="text-2xl font-bold tracking-tight text-white mb-2">
+    <h1 id="launcher-title" class="text-2xl font-bold tracking-tight text-white mb-1.5">
       바로가기 이름
     </h1>
-    <p id="launcher-url" class="text-xs text-indigo-300/80 truncate max-w-[280px] bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/40 mb-8 font-mono">
+    <p id="launcher-url" class="text-xs text-indigo-300/80 truncate max-w-[280px] bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/40 mb-6 font-mono">
       https://example.com
     </p>
 
-    <!-- [PC & 안드로이드 크롬 원클릭 설치 버튼 (보안 경고 0%)] -->
-    <button id="btn-pwa-install" class="hidden w-full mb-4 py-3.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition active:scale-[0.98] animate-pulse">
+    <!-- [크롬 공식 원클릭 설치 버튼 - Windows PC / 안드로이드 크롬 공통] -->
+    <button id="btn-pwa-install" class="w-full mb-4 py-3.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition active:scale-[0.98] animate-pulse">
       <i data-lucide="download" class="w-5 h-5"></i>
-      <span class="text-sm">바탕화면에 바로가기 1초 자동 설치</span>
+      <span class="text-sm">바탕화면 / 홈 화면에 1초 자동 설치</span>
     </button>
 
     <!-- 홈 화면 추가 안내 박스 -->
-    <div id="guide-box" class="w-full bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-5 mb-6 shadow-xl backdrop-blur-md">
-      <div class="flex items-center justify-center gap-2 text-amber-400 text-sm font-semibold mb-3">
-        <i data-lucide="sparkles" class="w-4 h-4"></i>
-        <span>바탕화면 / 홈 화면에 추가하는 방법</span>
+    <div id="guide-box" class="w-full bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-4 mb-5 shadow-xl backdrop-blur-md">
+      <div class="flex items-center justify-center gap-2 text-amber-400 text-xs font-semibold mb-3">
+        <i data-lucide="help-circle" class="w-4 h-4"></i>
+        <span>바로가기를 추가하는 가장 쉬운 방법</span>
       </div>
 
-      <div class="space-y-3 text-left text-xs text-slate-300">
+      <div class="space-y-2.5 text-left text-xs text-slate-300">
         <!-- PC 크롬 공식 설치 안내 -->
-        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-          <span class="bg-indigo-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
-            <i data-lucide="monitor" class="w-4 h-4"></i>
+        <div class="flex items-start gap-2.5 bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
+          <span class="bg-indigo-600 text-white rounded-lg p-1.5 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
           </span>
-          <div>
-            <strong class="text-white block text-sm">PC 크롬 (Windows / Mac)</strong>
-            브라우저 주소창 우측의 <span class="text-indigo-300 font-semibold">[앱 설치 🖥️]</span> 아이콘을 누르거나, 메뉴(⋮) &rarr; <span class="text-indigo-300 font-semibold">[저장 및 공유] &rarr; [바로가기 만들기]</span>를 누르세요.
+          <div class="leading-relaxed">
+            <strong class="text-white block font-medium">PC 크롬 (Windows / Mac)</strong>
+            주소창 오른쪽 <span class="text-indigo-300 font-bold">[앱 설치 🖥️]</span> 아이콘을 누르거나, 메뉴(⋮) &rarr; <span class="text-indigo-300 font-bold">[저장 및 공유] &rarr; [바로가기 만들기]</span>를 누르세요.
           </div>
         </div>
 
-        <!-- 안드로이드 / 모바일 크롬 가이드 -->
-        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-          <span class="bg-emerald-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
-            <i data-lucide="smartphone" class="w-4 h-4"></i>
+        <!-- 모바일 크롬 가이드 -->
+        <div class="flex items-start gap-2.5 bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/50">
+          <span class="bg-emerald-600 text-white rounded-lg p-1.5 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
           </span>
-          <div>
-            <strong class="text-white block text-sm">모바일 크롬 (Android)</strong>
-            우측 상단 메뉴 <span class="text-indigo-300 font-semibold">(⋮)</span> 누른 뒤 <span class="text-indigo-300 font-semibold">[홈 화면에 추가]</span> 또는 <span class="text-indigo-300 font-semibold">[앱 설치]</span>를 누르세요.
-          </div>
-        </div>
-
-        <!-- 아이폰 사파리 가이드 -->
-        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-          <span class="bg-blue-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
-            <i data-lucide="share" class="w-4 h-4"></i>
-          </span>
-          <div>
-            <strong class="text-white block text-sm">사파리 (iPhone / iPad)</strong>
-            하단 공유 버튼 <span class="text-blue-300 font-semibold">(↑)</span>을 누른 뒤 <span class="text-blue-300 font-semibold">[홈 화면에 추가]</span>를 누르세요.
+          <div class="leading-relaxed">
+            <strong class="text-white block font-medium">스마트폰 (크롬 / 사파리)</strong>
+            크롬: 메뉴(⋮) &rarr; <span class="text-emerald-300 font-bold">[홈 화면에 추가]</span><br>
+            사파리: 공유버튼(↑) &rarr; <span class="text-emerald-300 font-bold">[홈 화면에 추가]</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 즉시 접속 버튼 -->
-    <a id="btn-visit-now" href="#" class="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition active:scale-[0.98]">
+    <a id="btn-visit-now" href="#" class="w-full py-3.5 px-6 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition active:scale-[0.98]">
       <span>지금 이 웹사이트로 이동</span>
-      <i data-lucide="arrow-right" class="w-5 h-5"></i>
+      <i data-lucide="arrow-right" class="w-4 h-4"></i>
     </a>
   </main>
 
   <!-- 하단 안내 문구 -->
-  <footer class="text-center text-xs text-slate-400 py-3">
-    홈 화면에 추가된 아이콘을 누르면 자동으로 해당 사이트로 즉시 이동합니다.
+  <footer class="text-center text-[11px] text-slate-400 py-2">
+    홈 화면에 추가된 아이콘을 누르면 지정한 웹사이트로 즉시 연결됩니다.
   </footer>
 
   <script>
-    // URL 파라미터 또는 localStorage에서 런처 데이터 복원
+    // 전역 변수
+    let deferredPrompt = null;
+    let finalTargetUrl = "https://google.com";
+
     function initLauncher() {
       lucide.createIcons();
       const params = new URLSearchParams(window.location.search);
+      
       let targetUrl = params.get('url');
       let title = params.get('title');
-      let icon = params.get('icon');
-      let badge = params.get('badge');
+      let mode = params.get('mode') || 'ai';
+      let style = params.get('style') || 'magic-wand';
+      let emoji = params.get('emoji') || '🚀';
+      let themePack = params.get('pack') || '';
+      let badge = params.get('badge') || '';
+      let directIcon = params.get('icon');
       const isAutoLaunch = params.get('launch') === '1' || window.matchMedia('(display-mode: standalone)').matches;
 
-      // 파라미터가 없으면 localStorage 확인
+      // URL 파라미터가 비어있으면 localStorage 확인
       if (!targetUrl) {
         try {
           const stored = localStorage.getItem('anyicon_current');
@@ -137,39 +138,49 @@
             const data = JSON.parse(stored);
             targetUrl = data.url;
             title = data.title;
-            icon = data.icon;
-            badge = data.badge;
+            mode = data.mode || mode;
+            style = data.aiStyle || style;
+            emoji = data.emoji || emoji;
+            themePack = data.themePack || themePack;
+            badge = data.badge || badge;
+            if (data.icon) directIcon = data.icon;
           }
         } catch (e) {
-          console.error("데이터 로드 실패:", e);
+          console.error("데이터 복원 실패:", e);
         }
       }
 
-      // 기본값 폴백
       targetUrl = targetUrl || "https://google.com";
       title = title || "나만의 단축아이콘";
-      icon = icon || "./favicon.svg";
+      finalTargetUrl = targetUrl;
 
-      // DOM 업데이트
+      // DOM 텍스트 반영
       document.title = title;
       document.getElementById('launcher-title').textContent = title;
       document.getElementById('launcher-url').textContent = targetUrl;
-      document.getElementById('launcher-icon-img').src = icon;
       document.getElementById('btn-visit-now').href = targetUrl;
 
       if (badge && badge.trim() !== '') {
         const badgeEl = document.getElementById('badge-display');
-        badgeEl.textContent = badge;
+        badgeEl.textContent = badge === 'dot' ? '' : badge;
         badgeEl.classList.remove('hidden');
       }
 
-      // 파비콘 및 애플 터치 아이콘 동적 교체
-      const favIconEl = document.getElementById('dynamic-favicon');
-      const appleIconEl = document.getElementById('dynamic-apple-icon');
-      favIconEl.href = icon;
-      appleIconEl.href = icon;
+      // 고화질 512x512 아이콘 생성
+      const canvas = document.getElementById('render-canvas');
+      const ctx = canvas.getContext('2d');
+      let iconDataUrl = directIcon;
 
-      // 동적 Manifest 생성 (홈 화면에 추가 시 사용자가 만든 아이콘과 이름으로 등록되도록 설정)
+      if (!iconDataUrl || iconDataUrl.length < 50) {
+        iconDataUrl = renderDynamicCanvas(ctx, mode, style, emoji, themePack);
+      }
+
+      // 아이콘 이미지 바인딩
+      document.getElementById('launcher-icon-img').src = iconDataUrl;
+      document.getElementById('dynamic-favicon').href = iconDataUrl;
+      document.getElementById('dynamic-apple-icon').href = iconDataUrl;
+
+      // 동적 PWA Manifest 설정
       try {
         const manifestObj = {
           name: title,
@@ -180,9 +191,9 @@
           theme_color: "#6366f1",
           icons: [
             {
-              src: icon,
+              src: iconDataUrl,
               sizes: "512x512",
-              type: icon.startsWith('data:image/png') ? "image/png" : (icon.startsWith('data:image/svg') ? "image/svg+xml" : "image/png"),
+              type: "image/png",
               purpose: "any maskable"
             }
           ]
@@ -191,42 +202,138 @@
         const manifestUrl = URL.createObjectURL(blob);
         document.getElementById('dynamic-manifest').setAttribute('href', manifestUrl);
       } catch (err) {
-        console.error("매니페스트 동적 생성 실패:", err);
+        console.error("Manifest 생성 실패:", err);
       }
 
-      // 홈 화면 아이콘을 통해 진입했거나 launch=1인 경우 0.5초 후 타겟 사이트로 자동 리다이렉트
+      // 이미 바탕화면 아이콘을 통해 실행된 경우(standalone 또는 launch=1) 0.4초 후 자동 이동
       if (isAutoLaunch) {
         document.getElementById('guide-box').innerHTML = `
-          <div class="py-4 flex flex-col items-center gap-3">
-            <div class="w-8 h-8 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-sm font-medium text-white">${title} (으)로 이동하는 중...</p>
+          <div class="py-3 flex flex-col items-center gap-2">
+            <div class="w-7 h-7 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs font-semibold text-white">${title} (으)로 이동하는 중...</p>
           </div>
         `;
         setTimeout(() => {
           window.location.replace(targetUrl);
-        }, 500);
+        }, 400);
       }
 
-      // PWA 원클릭 설치 이벤트 (PC 바탕화면 및 모바일 크롬 공식 설치)
-      let deferredPrompt = null;
+      // PWA 원클릭 설치 이벤트 리스너 등록
       const installBtn = document.getElementById('btn-pwa-install');
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        if (installBtn) {
-          installBtn.classList.remove('hidden');
-          installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-              deferredPrompt.prompt();
-              const { outcome } = await deferredPrompt.userChoice;
-              if (outcome === 'accepted') {
-                installBtn.classList.add('hidden');
-              }
-              deferredPrompt = null;
-            }
-          });
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            installBtn.innerHTML = `<span>바탕화면에 설치 완료! 🎉</span>`;
+            installBtn.classList.remove('animate-pulse');
+          }
+          deferredPrompt = null;
+        } else {
+          // beforeinstallprompt가 아직 안 떴거나 데스크톱 크롬인 경우 안내 표시
+          alert("크롬 주소창 오른쪽의 [앱 설치 🖥️] 버튼을 누르거나, 메뉴(⋮) -> [저장 및 공유] -> [바로가기 만들기]를 누르면 바탕화면에 즉시 설치됩니다!");
         }
       });
+    }
+
+    // Canvas 렌더러 (기기간 공유 가능한 동일 엔진)
+    function renderDynamicCanvas(ctx, mode, style, emoji, themePack) {
+      const W = 512, H = 512;
+      ctx.clearRect(0, 0, W, H);
+
+      if (mode === 'text' || (!style && emoji)) {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#6366f1'); grad.addColorStop(1, '#9333ea');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = 'bold 190px sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(emoji || '🚀', W / 2, H / 2);
+
+      } else if (mode === 'pack' && themePack) {
+        const THEMES = {
+          p1: { bg: "#fbcfe8", fg: "#db2777", icon: "🍑" },
+          p2: { bg: "#ccfbf1", fg: "#0d9488", icon: "☕" },
+          p3: { bg: "#ede9fe", fg: "#7c3aed", icon: "✨" },
+          p4: { bg: "#e0f2fe", fg: "#0284c7", icon: "☁️" },
+          n1: { bg: "#020617", fg: "#38bdf8", icon: "⚡" },
+          n2: { bg: "#09090b", fg: "#f43f5e", icon: "🔥" },
+          w1: { bg: "#ef4444", fg: "#ffffff", icon: "▶" },
+          w2: { bg: "#18181b", fg: "#dc2626", icon: "🎬" }
+        };
+        const t = THEMES[themePack] || THEMES.p3;
+        ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = 'bold 180px sans-serif';
+        ctx.fillStyle = t.fg;
+        ctx.fillText(t.icon, W / 2, H / 2);
+
+      } else {
+        // AI 스타일 렌더러
+        if (style === 'speed-rocket') {
+          ctx.fillStyle = '#090d16'; ctx.fillRect(0, 0, W, H);
+          const fireGrad = ctx.createRadialGradient(256, 360, 10, 256, 360, 90);
+          fireGrad.addColorStop(0, '#fef08a'); fireGrad.addColorStop(0.5, '#f97316'); fireGrad.addColorStop(1, 'transparent');
+          ctx.fillStyle = fireGrad;
+          ctx.beginPath(); ctx.arc(256, 360, 80, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = '#f8fafc';
+          ctx.beginPath();
+          ctx.moveTo(256, 120); ctx.bezierCurveTo(310, 190, 310, 290, 290, 330);
+          ctx.lineTo(222, 330); ctx.bezierCurveTo(202, 290, 202, 190, 256, 120);
+          ctx.fill();
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath(); ctx.arc(256, 215, 26, 0, Math.PI * 2); ctx.fill();
+
+        } else if (style === 'hyper-portal') {
+          ctx.fillStyle = '#050515'; ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 16;
+          ctx.beginPath(); ctx.arc(256, 256, 140, 0, Math.PI * 2); ctx.stroke();
+          ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 14;
+          ctx.beginPath(); ctx.arc(256, 256, 95, 0, Math.PI * 2); ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.moveTo(230, 200); ctx.lineTo(295, 256); ctx.lineTo(230, 312);
+          ctx.lineWidth = 18; ctx.strokeStyle = '#ffffff'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          ctx.stroke();
+
+        } else if (style === 'neon-bolt') {
+          ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, W, H);
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.moveTo(275, 120); ctx.lineTo(195, 260); ctx.lineTo(255, 260); ctx.lineTo(235, 392); ctx.lineTo(320, 240); ctx.lineTo(260, 240);
+          ctx.fill();
+
+        } else if (style === 'gold-compass') {
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 14;
+          ctx.beginPath(); ctx.arc(256, 256, 135, 0, Math.PI * 2); ctx.stroke();
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath(); ctx.moveTo(256, 155); ctx.lineTo(285, 256); ctx.lineTo(256, 245); ctx.fill();
+          ctx.fillStyle = '#e2e8f0';
+          ctx.beginPath(); ctx.moveTo(256, 357); ctx.lineTo(285, 256); ctx.lineTo(256, 267); ctx.fill();
+
+        } else {
+          // magic-wand 기본값
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, '#312e81'); grad.addColorStop(0.5, '#6366f1'); grad.addColorStop(1, '#a855f7');
+          ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 22; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(170, 342); ctx.lineTo(342, 170); ctx.stroke();
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath(); ctx.arc(342, 170, 22, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      return ctx.canvas.toDataURL('image/png');
     }
 
     window.addEventListener('DOMContentLoaded', initLauncher);
