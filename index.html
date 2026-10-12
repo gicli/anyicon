@@ -1100,8 +1100,75 @@
       document.getElementById('btn-export-all').addEventListener('click', openMobileModal);
     }
 
+    // 바이트 레벨에서 http:// 및 https:// 패턴을 직접 스캔하는 초정밀 바이너리 추출기
+    function extractUrlsFromBytes(uint8) {
+      const found = [];
+      const len = uint8.length;
+
+      // 1) ASCII 기반 http / https 스캔 (1바이트씩)
+      for (let i = 0; i < len - 7; i++) {
+        // 'h', 't', 't', 'p' (104, 116, 116, 112)
+        if (uint8[i] === 104 && uint8[i+1] === 116 && uint8[i+2] === 116 && uint8[i+3] === 112) {
+          const isHttps = (uint8[i+4] === 115 && uint8[i+5] === 58 && uint8[i+6] === 47 && uint8[i+7] === 47);
+          const isHttp = (uint8[i+4] === 58 && uint8[i+5] === 47 && uint8[i+6] === 47);
+          if (isHttps || isHttp) {
+            let str = '';
+            let j = i;
+            while (j < len && uint8[j] >= 33 && uint8[j] <= 126 && uint8[j] !== 34 && uint8[j] !== 39 && uint8[j] !== 60 && uint8[j] !== 62) {
+              str += String.fromCharCode(uint8[j]);
+              j++;
+            }
+            if (str.length > 8 && !found.includes(str)) found.push(str);
+          }
+        }
+      }
+
+      // 2) UTF-16LE 기반 http / https 스캔 (2바이트씩, 짝수/홀수 오프셋 무관)
+      for (let i = 0; i < len - 15; i++) {
+        if (uint8[i] === 104 && uint8[i+1] === 0 &&
+            uint8[i+2] === 116 && uint8[i+3] === 0 &&
+            uint8[i+4] === 116 && uint8[i+5] === 0 &&
+            uint8[i+6] === 112 && uint8[i+7] === 0) {
+          const isHttps = (uint8[i+8] === 115 && uint8[i+9] === 0 && uint8[i+10] === 58 && uint8[i+11] === 0 && uint8[i+12] === 47 && uint8[i+13] === 0 && uint8[i+14] === 47 && uint8[i+15] === 0);
+          const isHttp = (uint8[i+8] === 58 && uint8[i+9] === 0 && uint8[i+10] === 47 && uint8[i+11] === 0 && uint8[i+12] === 47 && uint8[i+13] === 0);
+          if (isHttps || isHttp) {
+            let str = '';
+            let j = i;
+            while (j < len - 1 && uint8[j] >= 33 && uint8[j] <= 126 && uint8[j+1] === 0 && uint8[j] !== 34 && uint8[j] !== 39 && uint8[j] !== 60 && uint8[j] !== 62) {
+              str += String.fromCharCode(uint8[j]);
+              j += 2;
+            }
+            if (str.length > 8 && !found.includes(str)) found.push(str);
+          }
+        }
+      }
+
+      return found;
+    }
+
+    // 유명 서비스 이름으로 기본 URL 추론 맵
+    const POPULAR_NAME_MAP = {
+      'youtube': 'https://youtube.com',
+      '유튜브': 'https://youtube.com',
+      'netflix': 'https://netflix.com',
+      '넷플릭스': 'https://netflix.com',
+      'notion': 'https://notion.so',
+      '노션': 'https://notion.so',
+      'chatgpt': 'https://chatgpt.com',
+      'github': 'https://github.com',
+      '깃허브': 'https://github.com',
+      'naver': 'https://naver.com',
+      '네이버': 'https://naver.com',
+      'google': 'https://google.com',
+      '구글': 'https://google.com',
+      'instagram': 'https://instagram.com',
+      '인스타그램': 'https://instagram.com'
+    };
+
     // 통합 유니버설 드롭 핸들러 (파일 및 브라우저 드래그 텍스트 모두 처리)
     function handleUniversalDrop(e) {
+      console.log("드롭 이벤트 발생:", e.dataTransfer);
+
       // 1. 드롭된 파일이 있는 경우
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         handleIncomingFile(e.dataTransfer.files[0]);
@@ -1116,11 +1183,13 @@
       let targetUrl = '';
       let targetTitle = '';
 
-      if (uriList && uriList.startsWith('http')) {
+      if (uriList && uriList.trim().startsWith('http')) {
         targetUrl = uriList.split(/[\r\n]+/)[0].trim();
       } else if (plainText && plainText.includes('http')) {
         const match = plainText.match(/https?:\/\/[^\s"'<>]+/i);
         if (match) targetUrl = match[0].trim();
+      } else if (plainText && (plainText.includes('.com') || plainText.includes('.net') || plainText.includes('.kr') || plainText.includes('.app') || plainText.includes('.io'))) {
+        targetUrl = 'https://' + plainText.trim().replace(/^https?:\/\//i, '');
       }
 
       // HTML 링크에서 제목 추출 시도
@@ -1142,7 +1211,7 @@
         }
         applyDetectedShortcut(targetUrl, targetTitle, "브라우저 링크 드래그");
       } else {
-        showToast("감지 실패", "드롭된 내용에서 웹사이트 주소를 찾을 수 없습니다.", false);
+        showToast("감지 실패", "드롭된 데이터에서 주소를 찾을 수 없습니다. 직접 입력해주세요.", false);
       }
     }
 
@@ -1150,29 +1219,44 @@
     async function handleIncomingFile(file) {
       const fileName = file.name;
       const lowerName = fileName.toLowerCase();
+      console.log("드롭된 파일 감지:", fileName, "크기:", file.size, "타입:", file.type);
 
       // [1] Windows 단축아이콘 바이너리 (.lnk)
       if (lowerName.endsWith('.lnk')) {
         try {
           const buffer = await file.arrayBuffer();
-          // UTF-16LE 및 UTF-8 디코딩
-          const dec16 = new TextDecoder('utf-16le');
-          const dec8 = new TextDecoder('utf-8');
-          const str16 = dec16.decode(buffer);
-          const str8 = dec8.decode(buffer);
+          const bytes = new Uint8Array(buffer);
+          
+          // 바이트 레벨 초정밀 스캔 실행
+          const urls = extractUrlsFromBytes(bytes);
+          console.log("LNK 바이트 스캔 결과 URL들:", urls);
 
-          // URL 정규식 매칭 (http/https 링크 검색)
-          const urlRegex = /https?:\/\/[a-zA-Z0-9\.\-_~:/?#\[\]@!$&'()*+,;=%]+/i;
-          let match = str16.match(urlRegex) || str8.match(urlRegex);
+          const cleanTitle = fileName.replace(/\.lnk$/i, '').trim();
 
-          if (match) {
-            const detectedUrl = match[0].trim();
-            const cleanTitle = fileName.replace(/\.lnk$/i, '').trim();
+          if (urls.length > 0) {
+            // URL 발견!
+            const detectedUrl = urls[0].trim();
             applyDetectedShortcut(detectedUrl, cleanTitle, "Windows 바로가기(.lnk)");
             return;
           } else {
-            // LNK 내부에서 일반 URL이 없을 경우 (특수 Chrome 바로가기 등)
-            showToast("안내", `[.lnk] 파일 내부에서 웹사이트 주소를 파싱하지 못했습니다. 주소를 직접 입력해주세요.`, false);
+            // LNK 내부 바이너리에 URL이 없는 경우 (크롬 앱 ID 단축아이콘 등)
+            const cleanLower = cleanTitle.toLowerCase();
+            const guessedUrl = POPULAR_NAME_MAP[cleanLower];
+
+            if (guessedUrl) {
+              applyDetectedShortcut(guessedUrl, cleanTitle, "스마트 매칭");
+              showToast("바로가기 인식 완료! 🎉", `[${cleanTitle}] 바로가기를 자동 매칭했습니다.`);
+              return;
+            } else {
+              // 제목이라도 100% 자동 적용
+              document.getElementById('input-icon-title').value = cleanTitle;
+              appState.title = cleanTitle;
+              document.getElementById('preview-label-text').textContent = cleanTitle;
+              document.getElementById('input-target-url').focus();
+
+              showToast("바로가기 이름 감지!", `[${cleanTitle}] 이름을 불러왔습니다. 웹사이트 주소를 적어주세요.`, true);
+              return;
+            }
           }
         } catch (err) {
           console.error("LNK 파일 파싱 에러:", err);
@@ -1184,14 +1268,17 @@
         const reader = new FileReader();
         reader.onload = (e) => {
           const content = e.target.result;
-          // .url 파일의 URL=... 정규식 추출
           const match = content.match(/URL\s*=\s*(https?:\/\/[^\r\n]+)/i) || content.match(/(https?:\/\/[^\r\n"'<>]+)/i);
+          const cleanTitle = fileName.replace(/\.(url|desktop|webloc)$/i, '').trim();
+
           if (match && match[1]) {
             const extractedUrl = match[1].trim();
-            const cleanTitle = fileName.replace(/\.(url|desktop|webloc)$/i, '').trim();
             applyDetectedShortcut(extractedUrl, cleanTitle, "인터넷 바로가기(.url)");
           } else {
-            showToast("파싱 실패", "바로가기 파일에서 웹 주소를 찾지 못했습니다.", false);
+            document.getElementById('input-icon-title').value = cleanTitle;
+            appState.title = cleanTitle;
+            document.getElementById('preview-label-text').textContent = cleanTitle;
+            showToast("이름 감지 완료", `[${cleanTitle}] 이름을 불러왔습니다. 주소를 확인해주세요.`, true);
           }
         };
         reader.readAsText(file);
@@ -1207,7 +1294,6 @@
             appState.userImage = img;
             appState.iconMode = 'photo';
             
-            // 사진 탭으로 전환
             document.getElementById('tab-btn-photo').click();
             renderMainIcon();
             showToast("이미지 아이콘 적용 완료!", `[${fileName}] 이미지를 단축아이콘으로 적용했습니다.`);
@@ -1221,20 +1307,20 @@
         return;
       }
 
-      // [4] 기타 텍스트 파일 (.txt, .html 등)에서 URL 검색 시도
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target.result;
-        const match = content.match(/https?:\/\/[^\s"'<>]+/i);
-        if (match) {
-          const detectedUrl = match[0].trim();
-          const cleanTitle = fileName.replace(/\.[^/.]+$/, '').trim();
-          applyDetectedShortcut(detectedUrl, cleanTitle, "파일 내부 링크");
-        } else {
-          showToast("감지 실패", "지원되지 않는 파일이거나 URL을 찾을 수 없습니다.", false);
+      // [4] 기타 모든 파일: 바이너리 및 텍스트에서 URL 추출 시도
+      try {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        const urls = extractUrlsFromBytes(bytes);
+        const cleanTitle = fileName.replace(/\.[^/.]+$/, '').trim();
+
+        if (urls.length > 0) {
+          applyDetectedShortcut(urls[0].trim(), cleanTitle, "파일 내부 링크");
+          return;
         }
-      };
-      reader.readAsText(file);
+      } catch (_) {}
+
+      showToast("감지 실패", `[${fileName}] 파일에서 웹 주소를 찾지 못했습니다. 주소를 직접 입력해주세요.`, false);
     }
 
     // 감지된 바로가기 데이터 일괄 적용 함수
