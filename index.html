@@ -602,13 +602,13 @@
               <i data-lucide="chevron-right" class="w-4 h-4"></i>
             </button>
 
-            <!-- 2. PC 윈도우 단축아이콘 (.url + .ico) 다운로드 -->
-            <button id="btn-action-pc" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-between transition">
+            <!-- 2. PC 바탕화면 단축아이콘 자동 생성 (원클릭) -->
+            <button id="btn-action-pc" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-indigo-500/40 text-slate-100 font-bold text-xs flex items-center justify-between transition group shadow-md shadow-indigo-950/40">
               <div class="flex items-center gap-2">
-                <i data-lucide="monitor" class="w-4 h-4 text-indigo-400"></i>
-                <span>PC용 Windows 단축아이콘 (.url + .ico) 다운로드</span>
+                <i data-lucide="monitor" class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition"></i>
+                <span class="text-white">PC 바탕화면 단축아이콘 자동 생성 (원클릭)</span>
               </div>
-              <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
+              <span class="text-[10px] text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/30 font-semibold">자동 처리</span>
             </button>
 
             <!-- 3. Vercel 배포자용 PWA/Favicon 패키지 다운로드 -->
@@ -673,6 +673,64 @@
         <div class="flex items-center gap-2">
           <span class="text-blue-400 font-bold">iOS 사파리:</span>
           <span>하단 공유 (↑) &rarr; [홈 화면에 추가]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- [모달 1-2] PC 바탕화면 단축아이콘 자동 처리 모달 -->
+  <div id="modal-pc-guide" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 shadow-2xl border border-indigo-500/30 relative text-center">
+      <button id="btn-close-pc-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 rounded-2xl bg-indigo-600/30 border border-indigo-500/50 text-indigo-300 flex items-center justify-center mx-auto mb-3">
+        <i data-lucide="monitor" class="w-6 h-6"></i>
+      </div>
+
+      <h3 class="text-lg font-bold text-white mb-1">PC 바탕화면 단축아이콘 자동 생성</h3>
+      <p class="text-xs text-slate-400 mb-5">
+        복잡한 수동 작업 없이, 원하는 방식으로 1초 만에 바탕화면에 등록합니다.
+      </p>
+
+      <!-- 핵심 원클릭 자동 생성 버튼 -->
+      <div class="space-y-3 text-left">
+        <!-- 1번 옵션: 더블클릭 1초 자동 완성기 -->
+        <button id="btn-pc-auto-installer" class="w-full p-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold text-xs flex items-center justify-between shadow-lg shadow-indigo-500/25 transition active:scale-[0.98]">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+            </span>
+            <div>
+              <span class="block text-sm font-extrabold">바탕화면 1초 자동 생성기 (추천)</span>
+              <span class="block text-[11px] text-indigo-100 font-normal">다운로드 후 더블클릭 1번이면 바탕화면에 아이콘 자동 완성!</span>
+            </div>
+          </div>
+          <i data-lucide="download" class="w-5 h-5 shrink-0 ml-2"></i>
+        </button>
+
+        <!-- 2번 옵션: 일반 바로가기 파일(.url + .ico) 받기 -->
+        <button id="btn-pc-manual-files" class="w-full p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs flex items-center justify-between transition">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 shrink-0">
+              <i data-lucide="folder-down" class="w-3.5 h-3.5"></i>
+            </span>
+            <div>
+              <span class="block font-semibold text-slate-200">일반 바로가기 파일 받기 (.url + .ico)</span>
+              <span class="block text-[10px] text-slate-400">Windows 표준 인터넷 바로가기 파일과 고화질 아이콘</span>
+            </div>
+          </div>
+          <i data-lucide="download" class="w-4 h-4 text-slate-400 shrink-0"></i>
+        </button>
+      </div>
+
+      <!-- 쉬운 팁 안내 -->
+      <div class="mt-4 p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-left text-[11px] text-slate-400 flex items-start gap-2.5">
+        <i data-lucide="info" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+        <div>
+          <strong class="text-white block font-medium">자동 생성기 사용법</strong>
+          다운로드된 <span class="text-indigo-300 font-semibold">[_바탕화면추가.cmd]</span> 파일을 더블클릭하시면, 바탕화면에 내가 만든 예쁜 아이콘이 1초 만에 자동으로 등록됩니다!
         </div>
       </div>
     </div>
@@ -1117,8 +1175,11 @@
       document.getElementById('btn-close-mobile-modal').addEventListener('click', closeMobileModal);
       document.getElementById('btn-copy-launcher-link').addEventListener('click', copyLauncherUrl);
 
-      // PC 다운로드 액션
-      document.getElementById('btn-action-pc').addEventListener('click', downloadWindowsShortcut);
+      // PC 원클릭 단축아이콘 자동 처리 모달 및 액션
+      document.getElementById('btn-action-pc').addEventListener('click', openPcModal);
+      document.getElementById('btn-close-pc-modal').addEventListener('click', closePcModal);
+      document.getElementById('btn-pc-auto-installer').addEventListener('click', generatePcAutoInstaller);
+      document.getElementById('btn-pc-manual-files').addEventListener('click', downloadManualShortcutFiles);
 
       // Vercel 패키지 다운로드
       document.getElementById('btn-action-vercel').addEventListener('click', downloadVercelPackage);
@@ -2051,31 +2112,119 @@
       }
     }
 
-    // 2. PC용 Windows 바로가기 (.url + .ico) 다운로드
-    async function downloadWindowsShortcut() {
-      try {
-        // A. 캔버스 이미지를 ICO 바이너리로 인코딩
-        const icoBlob = await createIcoFromCanvas(canvas);
-        const icoFileName = `${sanitizeFileName(appState.title)}_icon.ico`;
+    // PC 바탕화면 모달 열기/닫기
+    function openPcModal() {
+      const modal = document.getElementById('modal-pc-guide');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
 
-        // ICO 파일 다운로드
+    function closePcModal() {
+      const modal = document.getElementById('modal-pc-guide');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Blob을 Base64 문자열로 변환하는 헬퍼
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const dataUrl = reader.result;
+          const base64 = dataUrl.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    // 2-1. [원클릭 자동화] PC 바탕화면 1초 자동 생성기 (.cmd) 다운로드
+    async function generatePcAutoInstaller() {
+      try {
+        showToast("생성기 빌드 중...", "PC 바탕화면 단축아이콘 자동 등록기를 생성하고 있습니다.");
+        
+        const icoBlob = await createIcoFromCanvas(canvas);
+        const b64Ico = await blobToBase64(icoBlob);
+        const safeTitle = sanitizeFileName(appState.title);
+        const targetUrl = appState.targetUrl;
+
+        // Base64를 64자씩 줄바꿈 포맷팅 (Windows certutil 규격)
+        const formattedB64 = b64Ico.match(/.{1,64}/g).join('\r\n');
+
+        // Windows 원클릭 자동 생성 스크립트 내용
+        const cmdContent = 
+`@echo off\r
+chcp 65001 >nul\r
+title AnyIcon - 바탕화면 단축아이콘 자동 등록\r
+cls\r
+echo ========================================================\r
+echo   AnyIcon: '${appState.title}' 단축아이콘을 등록합니다...\r
+echo ========================================================\r
+echo.\r
+\r
+set "ICON_DIR=%LOCALAPPDATA%\\AnyIcon\\icons"\r
+if not exist "%ICON_DIR%" mkdir "%ICON_DIR%"\r
+set "ICON_FILE=%ICON_DIR%\\${safeTitle}.ico"\r
+set "B64_FILE=%TEMP%\\anyicon_temp_%RANDOM%.b64"\r
+\r
+:: 내장 아이콘 디코딩\r
+(\r
+echo -----BEGIN CERTIFICATE-----\r
+echo ${formattedB64}\r
+echo -----END CERTIFICATE-----\r
+) > "%B64_FILE%"\r
+\r
+certutil -decode "%B64_FILE%" "%ICON_FILE%" >nul 2>&1\r
+del "%B64_FILE%" >nul 2>&1\r
+\r
+:: 바탕화면에 바로가기 생성\r
+set "SHORTCUT_PATH=%USERPROFILE%\\Desktop\\${safeTitle}.url"\r
+(\r
+echo [InternetShortcut]\r
+echo URL=${targetUrl}\r
+echo IconFile=%ICON_FILE%\r
+echo IconIndex=0\r
+) > "%SHORTCUT_PATH%"\r
+\r
+echo [성공] 바탕화면에 '${appState.title}' 단축아이콘이 자동 생성되었습니다!\r
+echo.\r
+echo 3초 후 창이 자동으로 닫힙니다.\r
+timeout /t 3 >nul\r
+exit\r
+`;
+
+        const cmdBlob = new Blob([cmdContent], { type: 'application/octet-stream' });
+        downloadBlob(cmdBlob, `${safeTitle}_바탕화면추가.cmd`);
+
+        closePcModal();
+        showToast("자동 생성기 다운로드 완료! 🎉", "다운로드된 파일을 더블클릭하시면 바탕화면에 아이콘이 즉시 자동 생성됩니다!");
+      } catch (err) {
+        console.error("자동 생성기 실패:", err);
+        showToast("오류 발생", "생성기 제작 중 오류가 발생했습니다: " + err.message, false);
+      }
+    }
+
+    // 2-2. [수동 옵션] 일반 바로가기 파일(.url + .ico) 다운로드
+    async function downloadManualShortcutFiles() {
+      try {
+        const icoBlob = await createIcoFromCanvas(canvas);
+        const safeTitle = sanitizeFileName(appState.title);
+        const icoFileName = `${safeTitle}_icon.ico`;
+
         downloadBlob(icoBlob, icoFileName);
 
-        // B. Windows Internet Shortcut (.url) 파일 생성
-        // Windows 바로가기 파일 포맷 규격
         const urlContent = `[InternetShortcut]\r\nURL=${appState.targetUrl}\r\nIconFile=${icoFileName}\r\nIconIndex=0\r\n`;
         const urlBlob = new Blob([urlContent], { type: 'application/x-mswinurl' });
-        const shortcutFileName = `${sanitizeFileName(appState.title)}.url`;
+        const shortcutFileName = `${safeTitle}.url`;
 
-        // 0.3초 후 바로가기 파일 다운로드
         setTimeout(() => {
           downloadBlob(urlBlob, shortcutFileName);
-          alert(`PC용 단축아이콘 생성이 완료되었습니다!\n\n1. 다운로드된 [${shortcutFileName}]과 [${icoFileName}]을 같은 폴더(바탕화면)에 두시면\n2. 내가 지정한 예쁜 아이콘으로 크롬 바로가기가 즉시 동작합니다!`);
+          closePcModal();
+          showToast("파일 다운로드 완료!", `[${shortcutFileName}]과 [${icoFileName}]을 같은 폴더에 두시면 됩니다.`);
         }, 300);
-
       } catch (err) {
-        console.error("단축아이콘 생성 실패:", err);
-        alert("단축아이콘 생성 중 오류가 발생했습니다: " + err.message);
+        console.error("수동 파일 다운로드 실패:", err);
       }
     }
 
