@@ -57,21 +57,38 @@
       https://example.com
     </p>
 
+    <!-- [PC & 안드로이드 크롬 원클릭 설치 버튼 (보안 경고 0%)] -->
+    <button id="btn-pwa-install" class="hidden w-full mb-4 py-3.5 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition active:scale-[0.98] animate-pulse">
+      <i data-lucide="download" class="w-5 h-5"></i>
+      <span class="text-sm">바탕화면에 바로가기 1초 자동 설치</span>
+    </button>
+
     <!-- 홈 화면 추가 안내 박스 -->
     <div id="guide-box" class="w-full bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-5 mb-6 shadow-xl backdrop-blur-md">
       <div class="flex items-center justify-center gap-2 text-amber-400 text-sm font-semibold mb-3">
         <i data-lucide="sparkles" class="w-4 h-4"></i>
-        <span>홈 화면에 추가하는 방법</span>
+        <span>바탕화면 / 홈 화면에 추가하는 방법</span>
       </div>
 
       <div class="space-y-3 text-left text-xs text-slate-300">
-        <!-- 안드로이드 크롬 가이드 -->
+        <!-- PC 크롬 공식 설치 안내 -->
         <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
           <span class="bg-indigo-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
-            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+            <i data-lucide="monitor" class="w-4 h-4"></i>
           </span>
           <div>
-            <strong class="text-white block text-sm">크롬 (Android / PC)</strong>
+            <strong class="text-white block text-sm">PC 크롬 (Windows / Mac)</strong>
+            브라우저 주소창 우측의 <span class="text-indigo-300 font-semibold">[앱 설치 🖥️]</span> 아이콘을 누르거나, 메뉴(⋮) &rarr; <span class="text-indigo-300 font-semibold">[저장 및 공유] &rarr; [바로가기 만들기]</span>를 누르세요.
+          </div>
+        </div>
+
+        <!-- 안드로이드 / 모바일 크롬 가이드 -->
+        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+          <span class="bg-emerald-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
+            <i data-lucide="smartphone" class="w-4 h-4"></i>
+          </span>
+          <div>
+            <strong class="text-white block text-sm">모바일 크롬 (Android)</strong>
             우측 상단 메뉴 <span class="text-indigo-300 font-semibold">(⋮)</span> 누른 뒤 <span class="text-indigo-300 font-semibold">[홈 화면에 추가]</span> 또는 <span class="text-indigo-300 font-semibold">[앱 설치]</span>를 누르세요.
           </div>
         </div>
@@ -189,6 +206,27 @@
           window.location.replace(targetUrl);
         }, 500);
       }
+
+      // PWA 원클릭 설치 이벤트 (PC 바탕화면 및 모바일 크롬 공식 설치)
+      let deferredPrompt = null;
+      const installBtn = document.getElementById('btn-pwa-install');
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) {
+          installBtn.classList.remove('hidden');
+          installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              if (outcome === 'accepted') {
+                installBtn.classList.add('hidden');
+              }
+              deferredPrompt = null;
+            }
+          });
+        }
+      });
     }
 
     window.addEventListener('DOMContentLoaded', initLauncher);

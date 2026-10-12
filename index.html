@@ -689,49 +689,72 @@
         <i data-lucide="monitor" class="w-6 h-6"></i>
       </div>
 
-      <h3 class="text-lg font-bold text-white mb-1">PC 바탕화면 단축아이콘 자동 생성</h3>
+      <h3 class="text-lg font-bold text-white mb-1">PC 바탕화면 단축아이콘 생성</h3>
       <p class="text-xs text-slate-400 mb-5">
-        복잡한 수동 작업 없이, 원하는 방식으로 1초 만에 바탕화면에 등록합니다.
+        윈도우 보안 경고 없이 가장 깔끔하고 안전하게 바탕화면에 등록하세요.
       </p>
 
-      <!-- 핵심 원클릭 자동 생성 버튼 -->
       <div class="space-y-3 text-left">
-        <!-- 1번 옵션: 더블클릭 1초 자동 완성기 -->
-        <button id="btn-pc-auto-installer" class="w-full p-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold text-xs flex items-center justify-between shadow-lg shadow-indigo-500/25 transition active:scale-[0.98]">
+        <!-- 1순위: 크롬 공식 런처로 바탕화면에 바로 설치 (보안 경고 0%!) -->
+        <a id="btn-pc-pwa-launcher" href="#" target="_blank" class="w-full p-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-600 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 text-white font-bold text-xs flex items-center justify-between shadow-lg shadow-emerald-500/25 transition active:scale-[0.98]">
           <div class="flex items-center gap-3">
             <span class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
-              <i data-lucide="zap" class="w-4 h-4"></i>
+              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-200"></i>
             </span>
             <div>
-              <span class="block text-sm font-extrabold">바탕화면 1초 자동 생성기 (추천)</span>
-              <span class="block text-[11px] text-indigo-100 font-normal">다운로드 후 더블클릭 1번이면 바탕화면에 아이콘 자동 완성!</span>
+              <div class="flex items-center gap-1.5">
+                <span class="block text-sm font-extrabold">크롬 공식 런처로 설치 (가장 추천)</span>
+                <span class="text-[9px] bg-white/20 px-1.5 py-0.2 rounded font-semibold text-emerald-100">보안경고 0%</span>
+              </div>
+              <span class="block text-[11px] text-emerald-100 font-normal">크롬 [앱 설치]로 윈도우 바탕화면에 고화질 아이콘 1초 등록!</span>
             </div>
           </div>
-          <i data-lucide="download" class="w-5 h-5 shrink-0 ml-2"></i>
-        </button>
+          <i data-lucide="external-link" class="w-5 h-5 shrink-0 ml-2"></i>
+        </a>
 
-        <!-- 2번 옵션: 일반 바로가기 파일(.url + .ico) 받기 -->
-        <button id="btn-pc-manual-files" class="w-full p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs flex items-center justify-between transition">
+        <!-- 2순위: 순수 인터넷 바로가기 파일(.url) 1개 다운로드 (보안 경고 없음) -->
+        <button id="btn-pc-single-url" class="w-full p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs flex items-center justify-between transition">
           <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 shrink-0">
-              <i data-lucide="folder-down" class="w-3.5 h-3.5"></i>
+            <span class="w-7 h-7 rounded-lg bg-indigo-900/40 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+              <i data-lucide="file-symlink" class="w-3.5 h-3.5"></i>
             </span>
             <div>
-              <span class="block font-semibold text-slate-200">일반 바로가기 파일 받기 (.url + .ico)</span>
-              <span class="block text-[10px] text-slate-400">Windows 표준 인터넷 바로가기 파일과 고화질 아이콘</span>
+              <div class="flex items-center gap-1.5">
+                <span class="block font-semibold text-slate-200">인터넷 바로가기 파일(.url) 1개 받기</span>
+                <span class="text-[9px] bg-slate-800 px-1.5 py-0.2 rounded text-slate-400">안전한 텍스트 파일</span>
+              </div>
+              <span class="block text-[10px] text-slate-400">보안 차단 없이 다운로드받아 바탕화면에 바로 놓는 파일</span>
+            </div>
+          </div>
+          <i data-lucide="download" class="w-4 h-4 text-slate-400 shrink-0"></i>
+        </button>
+
+        <!-- 3순위: 더블클릭 1초 자동 생성기 (.cmd) -->
+        <button id="btn-pc-auto-installer" class="w-full p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs flex items-center justify-between transition">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-amber-400 shrink-0">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+            </span>
+            <div>
+              <span class="block font-medium text-slate-300 text-[11px]">배치 스크립트 자동 생성기 (.cmd)</span>
+              <span class="block text-[10px] text-slate-400">더블클릭 1번에 바탕화면으로 아이콘 자동 복사</span>
             </div>
           </div>
           <i data-lucide="download" class="w-4 h-4 text-slate-400 shrink-0"></i>
         </button>
       </div>
 
-      <!-- 쉬운 팁 안내 -->
-      <div class="mt-4 p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-left text-[11px] text-slate-400 flex items-start gap-2.5">
-        <i data-lucide="info" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
-        <div>
-          <strong class="text-white block font-medium">자동 생성기 사용법</strong>
-          다운로드된 <span class="text-indigo-300 font-semibold">[_바탕화면추가.cmd]</span> 파일을 더블클릭하시면, 바탕화면에 내가 만든 예쁜 아이콘이 1초 만에 자동으로 등록됩니다!
+      <!-- 윈도우 보안 경고 해결 안내 박스 -->
+      <div class="mt-4 p-3 bg-amber-950/30 rounded-xl border border-amber-500/30 text-left text-[11px] text-slate-300">
+        <div class="flex items-center gap-1.5 text-amber-400 font-bold mb-1">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+          <span>윈도우 파란색 보안 창(SmartScreen)이 뜨나요?</span>
         </div>
+        <p class="text-slate-400 leading-relaxed">
+          스크립트 파일(.cmd) 실행 시 마이크로소프트 인증서가 없는 파일이라 파란 경고창이 뜹니다.  
+          화면의 <span class="text-white font-semibold underline">[추가 정보]</span>를 누른 뒤 <span class="text-indigo-300 font-semibold underline">[실행]</span> 버튼을 누르시면 정상 작동합니다!  
+          (또는 상단의 <strong class="text-emerald-300">[크롬 공식 런처로 설치]</strong>를 이용하시면 보안 경고가 전혀 뜨지 않습니다.)
+        </p>
       </div>
     </div>
   </div>
@@ -1178,8 +1201,8 @@
       // PC 원클릭 단축아이콘 자동 처리 모달 및 액션
       document.getElementById('btn-action-pc').addEventListener('click', openPcModal);
       document.getElementById('btn-close-pc-modal').addEventListener('click', closePcModal);
+      document.getElementById('btn-pc-single-url').addEventListener('click', downloadSingleUrlShortcut);
       document.getElementById('btn-pc-auto-installer').addEventListener('click', generatePcAutoInstaller);
-      document.getElementById('btn-pc-manual-files').addEventListener('click', downloadManualShortcutFiles);
 
       // Vercel 패키지 다운로드
       document.getElementById('btn-action-vercel').addEventListener('click', downloadVercelPackage);
@@ -2117,6 +2140,22 @@
       const modal = document.getElementById('modal-pc-guide');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+
+      // 아이콘 이미지 DataURL 추출 및 localStorage 저장
+      const iconDataUrl = canvas.toDataURL('image/png');
+      try {
+        localStorage.setItem('anyicon_current', JSON.stringify({
+          url: appState.targetUrl,
+          title: appState.title,
+          icon: iconDataUrl,
+          badge: appState.badge
+        }));
+      } catch (_) {}
+
+      // 런처 URL 구성 및 버튼 바인딩
+      const currentOrigin = window.location.origin + window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/$/i, '');
+      const launcherUrl = `${currentOrigin}/launcher.html?url=${encodeURIComponent(appState.targetUrl)}&title=${encodeURIComponent(appState.title)}&badge=${encodeURIComponent(appState.badge)}`;
+      document.getElementById('btn-pc-pwa-launcher').href = launcherUrl;
     }
 
     function closePcModal() {
@@ -2139,7 +2178,23 @@
       });
     }
 
-    // 2-1. [원클릭 자동화] PC 바탕화면 1초 자동 생성기 (.cmd) 다운로드
+    // 2-1. [보안 경고 0% 🛡️] Windows 순수 인터넷 바로가기 (.url 단일 파일) 다운로드
+    function downloadSingleUrlShortcut() {
+      try {
+        const safeTitle = sanitizeFileName(appState.title);
+        // Windows 표준 인터넷 바로가기 파일 포맷 (순수 텍스트 파일이므로 윈도우 SmartScreen 보안 경고 100% 없음)
+        const urlContent = `[InternetShortcut]\r\nURL=${appState.targetUrl}\r\n`;
+        const urlBlob = new Blob([urlContent], { type: 'application/x-mswinurl' });
+        downloadBlob(urlBlob, `${safeTitle}.url`);
+
+        closePcModal();
+        showToast("바로가기 파일 다운로드 완료! 🛡️", "보안 경고 없이 안전하게 다운로드되었습니다. 바탕화면에 놓으시면 됩니다!");
+      } catch (err) {
+        console.error("URL 바로가기 다운로드 실패:", err);
+      }
+    }
+
+    // 2-2. [자동 설치기] PC 바탕화면 자동 생성기 (.cmd) 다운로드
     async function generatePcAutoInstaller() {
       try {
         showToast("생성기 빌드 중...", "PC 바탕화면 단축아이콘 자동 등록기를 생성하고 있습니다.");
@@ -2198,33 +2253,10 @@ exit\r
         downloadBlob(cmdBlob, `${safeTitle}_바탕화면추가.cmd`);
 
         closePcModal();
-        showToast("자동 생성기 다운로드 완료! 🎉", "다운로드된 파일을 더블클릭하시면 바탕화면에 아이콘이 즉시 자동 생성됩니다!");
+        showToast("생성기 다운로드 완료!", "실행 시 윈도우 파란 창이 뜨면 [추가 정보] -> [실행]을 누르시면 됩니다.");
       } catch (err) {
         console.error("자동 생성기 실패:", err);
         showToast("오류 발생", "생성기 제작 중 오류가 발생했습니다: " + err.message, false);
-      }
-    }
-
-    // 2-2. [수동 옵션] 일반 바로가기 파일(.url + .ico) 다운로드
-    async function downloadManualShortcutFiles() {
-      try {
-        const icoBlob = await createIcoFromCanvas(canvas);
-        const safeTitle = sanitizeFileName(appState.title);
-        const icoFileName = `${safeTitle}_icon.ico`;
-
-        downloadBlob(icoBlob, icoFileName);
-
-        const urlContent = `[InternetShortcut]\r\nURL=${appState.targetUrl}\r\nIconFile=${icoFileName}\r\nIconIndex=0\r\n`;
-        const urlBlob = new Blob([urlContent], { type: 'application/x-mswinurl' });
-        const shortcutFileName = `${safeTitle}.url`;
-
-        setTimeout(() => {
-          downloadBlob(urlBlob, shortcutFileName);
-          closePcModal();
-          showToast("파일 다운로드 완료!", `[${shortcutFileName}]과 [${icoFileName}]을 같은 폴더에 두시면 됩니다.`);
-        }, 300);
-      } catch (err) {
-        console.error("수동 파일 다운로드 실패:", err);
       }
     }
 
