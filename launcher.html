@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>단축아이콘 런처</title>
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="./favicon.svg" />
+  <link id="dynamic-apple-icon" rel="apple-touch-icon" href="./favicon.svg" />
+  <link id="dynamic-manifest" rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#4f46e5" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* 배경 그라데이션 및 애니메이션 효과 */
+    body {
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(99, 102, 241, 0.4); }
+      50% { transform: scale(1.04); box-shadow: 0 0 40px rgba(168, 85, 247, 0.7); }
+    }
+    .icon-glow {
+      animation: pulseGlow 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col justify-between items-center p-6 select-none">
+  <!-- 상단 네비게이션 -->
+  <header class="w-full max-w-md flex justify-between items-center pt-2">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <span class="text-xs font-semibold tracking-wider text-indigo-300 uppercase">AnyIcon Launcher</span>
+    </div>
+    <a href="./index.html" class="text-xs bg-slate-800/80 hover:bg-slate-750 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700/60 transition">
+      아이콘 스튜디오로 돌아가기
+    </a>
+  </header>
+
+  <!-- 중앙 메인 안내 카드 -->
+  <main class="w-full max-w-md flex flex-col items-center text-center my-auto py-6">
+    <!-- 커스텀 아이콘 렌더링 영역 -->
+    <div class="relative mb-6">
+      <div id="icon-container" class="w-32 h-32 rounded-3xl overflow-hidden icon-glow border-2 border-indigo-400/40 bg-slate-900 shadow-2xl flex items-center justify-center">
+        <img id="launcher-icon-img" src="./favicon.svg" alt="커스텀 아이콘" class="w-full h-full object-cover" />
+      </div>
+      <div id="badge-display" class="hidden absolute -top-2 -right-2 bg-rose-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg border border-white/20">
+        1
+      </div>
+    </div>
+
+    <!-- 타이틀 및 연결 링크 안내 -->
+    <h1 id="launcher-title" class="text-2xl font-bold tracking-tight text-white mb-2">
+      바로가기 이름
+    </h1>
+    <p id="launcher-url" class="text-xs text-indigo-300/80 truncate max-w-[280px] bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/40 mb-8 font-mono">
+      https://example.com
+    </p>
+
+    <!-- 홈 화면 추가 안내 박스 -->
+    <div id="guide-box" class="w-full bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-5 mb-6 shadow-xl backdrop-blur-md">
+      <div class="flex items-center justify-center gap-2 text-amber-400 text-sm font-semibold mb-3">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>홈 화면에 추가하는 방법</span>
+      </div>
+
+      <div class="space-y-3 text-left text-xs text-slate-300">
+        <!-- 안드로이드 크롬 가이드 -->
+        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+          <span class="bg-indigo-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
+            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+          </span>
+          <div>
+            <strong class="text-white block text-sm">크롬 (Android / PC)</strong>
+            우측 상단 메뉴 <span class="text-indigo-300 font-semibold">(⋮)</span> 누른 뒤 <span class="text-indigo-300 font-semibold">[홈 화면에 추가]</span> 또는 <span class="text-indigo-300 font-semibold">[앱 설치]</span>를 누르세요.
+          </div>
+        </div>
+
+        <!-- 아이폰 사파리 가이드 -->
+        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+          <span class="bg-blue-600 text-white rounded-lg p-1.5 flex items-center justify-center mt-0.5">
+            <i data-lucide="share" class="w-4 h-4"></i>
+          </span>
+          <div>
+            <strong class="text-white block text-sm">사파리 (iPhone / iPad)</strong>
+            하단 공유 버튼 <span class="text-blue-300 font-semibold">(↑)</span>을 누른 뒤 <span class="text-blue-300 font-semibold">[홈 화면에 추가]</span>를 누르세요.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 즉시 접속 버튼 -->
+    <a id="btn-visit-now" href="#" class="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition active:scale-[0.98]">
+      <span>지금 이 웹사이트로 이동</span>
+      <i data-lucide="arrow-right" class="w-5 h-5"></i>
+    </a>
+  </main>
+
+  <!-- 하단 안내 문구 -->
+  <footer class="text-center text-xs text-slate-400 py-3">
+    홈 화면에 추가된 아이콘을 누르면 자동으로 해당 사이트로 즉시 이동합니다.
+  </footer>
+
+  <script>
+    // URL 파라미터 또는 localStorage에서 런처 데이터 복원
+    function initLauncher() {
+      lucide.createIcons();
+      const params = new URLSearchParams(window.location.search);
+      let targetUrl = params.get('url');
+      let title = params.get('title');
+      let icon = params.get('icon');
+      let badge = params.get('badge');
+      const isAutoLaunch = params.get('launch') === '1' || window.matchMedia('(display-mode: standalone)').matches;
+
+      // 파라미터가 없으면 localStorage 확인
+      if (!targetUrl) {
+        try {
+          const stored = localStorage.getItem('anyicon_current');
+          if (stored) {
+            const data = JSON.parse(stored);
+            targetUrl = data.url;
+            title = data.title;
+            icon = data.icon;
+            badge = data.badge;
+          }
+        } catch (e) {
+          console.error("데이터 로드 실패:", e);
+        }
+      }
+
+      // 기본값 폴백
+      targetUrl = targetUrl || "https://google.com";
+      title = title || "나만의 단축아이콘";
+      icon = icon || "./favicon.svg";
+
+      // DOM 업데이트
+      document.title = title;
+      document.getElementById('launcher-title').textContent = title;
+      document.getElementById('launcher-url').textContent = targetUrl;
+      document.getElementById('launcher-icon-img').src = icon;
+      document.getElementById('btn-visit-now').href = targetUrl;
+
+      if (badge && badge.trim() !== '') {
+        const badgeEl = document.getElementById('badge-display');
+        badgeEl.textContent = badge;
+        badgeEl.classList.remove('hidden');
+      }
+
+      // 파비콘 및 애플 터치 아이콘 동적 교체
+      const favIconEl = document.getElementById('dynamic-favicon');
+      const appleIconEl = document.getElementById('dynamic-apple-icon');
+      favIconEl.href = icon;
+      appleIconEl.href = icon;
+
+      // 동적 Manifest 생성 (홈 화면에 추가 시 사용자가 만든 아이콘과 이름으로 등록되도록 설정)
+      try {
+        const manifestObj = {
+          name: title,
+          short_name: title,
+          start_url: window.location.href.includes('launch=1') ? window.location.href : (window.location.href + (window.location.href.includes('?') ? '&launch=1' : '?launch=1')),
+          display: "standalone",
+          background_color: "#0f172a",
+          theme_color: "#6366f1",
+          icons: [
+            {
+              src: icon,
+              sizes: "512x512",
+              type: icon.startsWith('data:image/png') ? "image/png" : (icon.startsWith('data:image/svg') ? "image/svg+xml" : "image/png"),
+              purpose: "any maskable"
+            }
+          ]
+        };
+        const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+        const manifestUrl = URL.createObjectURL(blob);
+        document.getElementById('dynamic-manifest').setAttribute('href', manifestUrl);
+      } catch (err) {
+        console.error("매니페스트 동적 생성 실패:", err);
+      }
+
+      // 홈 화면 아이콘을 통해 진입했거나 launch=1인 경우 0.5초 후 타겟 사이트로 자동 리다이렉트
+      if (isAutoLaunch) {
+        document.getElementById('guide-box').innerHTML = `
+          <div class="py-4 flex flex-col items-center gap-3">
+            <div class="w-8 h-8 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-sm font-medium text-white">${title} (으)로 이동하는 중...</p>
+          </div>
+        `;
+        setTimeout(() => {
+          window.location.replace(targetUrl);
+        }, 500);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initLauncher);
+  </script>
+</body>
+</html>

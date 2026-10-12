@@ -1,0 +1,16 @@
+{
+  "name": "AnyIcon Web - 단축아이콘 체인저",
+  "short_name": "AnyIcon",
+  "description": "크롬 및 모든 기기에서 내가 원하는 사진이나 AI 이미지로 고화질 홈 화면 단축아이콘 생성 및 교체",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
